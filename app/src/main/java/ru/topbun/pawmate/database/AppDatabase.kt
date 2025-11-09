@@ -8,10 +8,12 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import ru.topbun.pawmate.database.dao.NoteDao
 import ru.topbun.pawmate.database.dao.PetDao
 import ru.topbun.pawmate.database.dao.ReminderDao
 import ru.topbun.pawmate.database.dao.TipDao
 import ru.topbun.pawmate.database.dao.UserDao
+import ru.topbun.pawmate.entity.Note
 import ru.topbun.pawmate.entity.Pet
 import ru.topbun.pawmate.entity.Reminder
 import ru.topbun.pawmate.entity.Tip
@@ -23,6 +25,7 @@ import ru.topbun.pawmate.entity.User
         Tip::class,
         Pet::class,
         Reminder::class,
+        Note::class,
     ],
     exportSchema = true,
     version = 3,
@@ -33,6 +36,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun tipDao(): TipDao
     abstract fun petDao(): PetDao
     abstract fun reminderDao(): ReminderDao
+    abstract fun noteDao(): NoteDao
 
     companion object {
 

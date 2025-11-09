@@ -14,5 +14,6 @@ data class Pet(
     val age: Int,
     val breed: String?,
     val image: String?,
-    val type: PetType
+    val type: String,
+    val description: String
 ): Parcelable

@@ -29,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -132,8 +133,8 @@ private fun ReminderItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .shadow(4.dp, RoundedCornerShape(12.dp))
             .background(Colors.WHITE)
-            .border(1.5.dp, Colors.BROWN, RoundedCornerShape(12.dp))
             .noRippleClickable {
                 onClick()
             }

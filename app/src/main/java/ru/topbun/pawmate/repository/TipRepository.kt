@@ -1,5 +1,6 @@
 package ru.topbun.pawmate.repository
 
+import android.R.attr.type
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +27,7 @@ class TipRepository(
         val tips = dao.getTips().takeIf { it.isNotEmpty() } ?: return null
         return tips.random()
     }
-    suspend fun getTipList(type: PetType) = dao.getTips(type)
+    suspend fun getTipList() = dao.getTips().shuffled()
 
     private suspend fun initTips(){
         if (dao.getTips().size < 50){

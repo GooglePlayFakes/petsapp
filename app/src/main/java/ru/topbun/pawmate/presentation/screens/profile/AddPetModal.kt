@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
@@ -61,7 +63,7 @@ fun AddPetModal(
 ) {
     DialogWrapper(onDismissDialog = onDialogDismiss) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
 
@@ -69,7 +71,8 @@ fun AddPetModal(
             var age by remember { mutableStateOf("") }
             var breed by remember { mutableStateOf("") }
             var image by remember { mutableStateOf<String?>(null) }
-            var typePet by remember { mutableStateOf(PetType.DOG) }
+            var type by remember { mutableStateOf("") }
+            var description by remember { mutableStateOf("") }
             Title()
             Spacer(modifier = Modifier.height(16.dp))
             FieldWithPhoto(
@@ -77,14 +80,16 @@ fun AddPetModal(
                 age = age,
                 breed = breed,
                 image = image,
+                type = type,
+                description = description,
                 onChangeName = { name = it },
                 onChangeAge = { age = it },
                 onChangeBreed = { breed = it },
-                onChangeImage = { image = it }
+                onChangeImage = { image = it },
+                onChangeType = { type = it },
+                onChangeDescription = { description = it },
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            ChoicePetType(typePet){ typePet = it }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             AppButton(
                 modifier = Modifier
                     .height(48.dp)
@@ -96,47 +101,11 @@ fun AddPetModal(
                     name = name,
                     age = age.toIntOrNull() ?: 0,
                     breed = breed.takeIf { it.isNotBlank() },
-                    type = typePet,
-                    image = image
+                    type = type,
+                    image = image,
+                    description = description,
                 )
                 onAddPet(pet)
-            }
-        }
-    }
-}
-
-@Composable
-private fun ChoicePetType(type: PetType, onChangeType: (PetType) -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        PetType.entries.forEach {
-            Row(
-                modifier = Modifier
-                    .clickable(
-                        interactionSource = MutableInteractionSource(),
-                        indication = null
-                    ) { onChangeType(it) },
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                RadioButton(
-                    selected = type == it,
-                    onClick = { onChangeType(it) },
-                    colors = RadioButtonDefaults.colors(
-                        Colors.BROWN,
-                        Colors.BROWN,
-                        Colors.BROWN,
-                        Colors.BROWN
-                    )
-                )
-                Text(
-                    text = it.toString(),
-                    style = Typography.APP_TEXT,
-                    color = Colors.BLACK,
-                    fontSize = 14.sp,
-                    fontFamily = Fonts.SF.MEDIUM
-                )
             }
         }
     }
@@ -148,54 +117,27 @@ private fun FieldWithPhoto(
     age: String,
     breed: String,
     image: String?,
+    type: String,
+    description: String,
     onChangeName: (String) -> Unit,
     onChangeAge: (String) -> Unit,
     onChangeBreed: (String) -> Unit,
     onChangeImage: (String) -> Unit,
+    onChangeType: (String) -> Unit,
+    onChangeDescription: (String) -> Unit,
 ) {
-    var columnHeight by remember { mutableStateOf(0) }
-    Row(
+
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .onGloballyPositioned { layoutCoordinates ->
-                    columnHeight = layoutCoordinates.size.height
-                },
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            AppTextField(
-                modifier = Modifier.height(48.dp),
-                value = name,
-                errorText = null,
-                onValueChange = { onChangeName(it) },
-                placeholder = "Имя питомца",
-            )
-            AppTextField(
-                modifier = Modifier.height(48.dp),
-                value = age,
-                errorText = null,
-                onValueChange = { onChangeAge(it) },
-                placeholder = "Возраст",
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-            AppTextField(
-                modifier = Modifier.height(48.dp),
-                value = breed,
-                errorText = null,
-                onValueChange = { onChangeBreed(it) },
-                placeholder = "Порода",
-            )
-        }
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ){
         val bitmap = BitmapFactory.decodeFile(image)
         val context = LocalContext.current
         val launcher = pickImageLauncher(context, onChangeImage)
         Box(
             modifier = Modifier
-                .height(with(LocalDensity.current) { columnHeight.toDp() })
-                .aspectRatio(1f)
+                .size(128.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .border(1.5.dp, Colors.BLUE_GRAY, RoundedCornerShape(8.dp))
                 .rippleClickable { launcher.launch("image/*")  }
@@ -209,6 +151,43 @@ private fun FieldWithPhoto(
                 )
             }
         }
+        AppTextField(
+            modifier = Modifier.height(48.dp).fillMaxWidth(0.5f),
+            value = name,
+            errorText = null,
+            onValueChange = { onChangeName(it) },
+            placeholder = "Кличка питомца",
+        )
+        AppTextField(
+            modifier = Modifier.height(48.dp).fillMaxWidth(0.5f),
+            value = age,
+            errorText = null,
+            onValueChange = { onChangeAge(it) },
+            placeholder = "Возраст",
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+        AppTextField(
+            modifier = Modifier.height(48.dp),
+            value = breed,
+            errorText = null,
+            onValueChange = { onChangeBreed(it) },
+            placeholder = "Вид питомца",
+        )
+        AppTextField(
+            modifier = Modifier.height(48.dp),
+            value = type,
+            errorText = null,
+            onValueChange = { onChangeType(it) },
+            placeholder = "Порода питомца",
+        )
+        AppTextField(
+            modifier = Modifier.height(160.dp),
+            value = description,
+            errorText = null,
+            singleLine = false,
+            onValueChange = { onChangeDescription(it) },
+            placeholder = "Описание",
+        )
     }
 }
 

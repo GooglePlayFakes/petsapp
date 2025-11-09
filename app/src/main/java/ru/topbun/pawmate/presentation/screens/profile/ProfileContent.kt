@@ -69,16 +69,14 @@ object ProfileScreen: Screen {
             Spacer(modifier = Modifier.height(4.dp))
             NameWithCount(state)
             PetList(state){ navigator.push(DetailScreen(it)) }
-            if (state.pets.size < 5){
-                AppButton(
-                    modifier = Modifier
-                        .height(48.dp)
-                        .fillMaxWidth(),
-                    text = "Добавить питомца",
-                    enabled = true,
-                ) {
-                    openAddPetModal = true
-                }
+            AppButton(
+                modifier = Modifier
+                    .height(48.dp)
+                    .fillMaxWidth(),
+                text = "Добавить питомца",
+                enabled = true,
+            ) {
+                openAddPetModal = true
             }
             if (openAddPetModal){
                 AddPetModal(
@@ -177,7 +175,7 @@ private fun NameWithCount(state: ProfileState) {
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
-            text = "${state.pets.size}/5",
+            text = "${state.pets.size}",
             style = Typography.APP_TEXT,
             color = Colors.BROWN,
             fontSize = 24.sp,
